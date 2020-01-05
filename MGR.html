@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="title: this is my first blog 1.MGR组复制的特点 高一致性：基于分布式paxos协议实现组复制，保证数据一致性；  高容错性：自动检测机制，只要不是大多数节点都宕机就可以继续工作，内置防脑裂保护机制；  高扩展性：节点的增加与移除会自动更新组成员信息，新节点加入后，自动从其他节点同步增量数据，直到与其他节点数据一致；  高灵活性：提供单主模式和多主模式，单主模式在主">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/MGR.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="title: this is my first blog 1.MGR组复制的特点 高一致性：基于分布式paxos协议实现组复制，保证数据一致性；  高容错性：自动检测机制，只要不是大多数节点都宕机就可以继续工作，内置防脑裂保护机制；  高扩展性：节点的增加与移除会自动更新组成员信息，新节点加入后，自动从其他节点同步增量数据，直到与其他节点数据一致；  高灵活性：提供单主模式和多主模式，单主模式在主">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-01-05T10:01:46.343Z">
+<meta property="article:modified_time" content="2020-01-05T09:58:02.103Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/MGR.html" class="article-date">
+  <time datetime="2020-01-05T10:01:46.343Z" itemprop="datePublished">2020-01-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>title: this is my first blog</p>
+<h2 id="1-MGR组复制的特点"><a href="#1-MGR组复制的特点" class="headerlink" title="1.MGR组复制的特点"></a>1.MGR组复制的特点</h2><ul>
+<li><p><strong>高一致性</strong>：基于分布式paxos协议实现组复制，保证数据一致性；</p>
+</li>
+<li><p><strong>高容错性</strong>：自动检测机制，只要不是大多数节点都宕机就可以继续工作，内置防脑裂保护机制；</p>
+</li>
+<li><p><strong>高扩展性</strong>：节点的增加与移除会自动更新组成员信息，新节点加入后，自动从其他节点同步增量数据，直到与其他节点数据一致；</p>
+</li>
+<li><p><strong>高灵活性</strong>：提供单主模式和多主模式，单主模式在主库宕机后能够自动选主，所有写入都在主节点进行，多主模式支持多节点写入。</p>
+</li>
+</ul>
+<h2 id="2-使用MGR的限制"><a href="#2-使用MGR的限制" class="headerlink" title="2.使用MGR的限制"></a>2.使用MGR的限制</h2><ul>
+<li>1.存储引擎必须为Innodb，即仅支持InnoDB表，并且每张表一定要有一个主键，用于做write set的冲突检测;</li>
+<li>2.每个表必须提供主键;</li>
+<li>3.只支持ipv4，网络需求较高;</li>
+<li>4.必须打开GTID特性，二进制日志格式必须设置为ROW，用于选主与write set;</li>
+<li>5.COMMIT可能会导致失败，类似于快照事务隔离级别的失败场景;</li>
+<li>6.目前一个MGR集群组最多支持9个节点;</li>
+<li>7.不支持外键于save point特性，无法做全局间的约束检测与部分部分回滚;</li>
+<li>8.二进制日志binlog不支持Replication event checksums;</li>
+<li>9.多主模式(也就是多写模式) 不支持SERIALIZABLE事务隔离级别;</li>
+<li>10.多主模式不能完全支持级联外键约束;</li>
+<li>11.多主模式不支持在不同节点上对同一个数据库对象并发执行DDL(在不同节点上对同一行并发进行RW事务，后发起的事务会失败);</li>
+</ul>
+<h2 id="3-主机地址规划"><a href="#3-主机地址规划" class="headerlink" title="3.主机地址规划"></a>3.主机地址规划</h2><table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>主机IP</th>
+<th>服务端口</th>
+<th>组通信端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>db01</td>
+<td>172.16.1.151</td>
+<td>3306</td>
+<td>33061</td>
+</tr>
+<tr>
+<td>db02</td>
+<td>172.16.1.152</td>
+<td>3306</td>
+<td>33061</td>
+</tr>
+<tr>
+<td>db03</td>
+<td>172.16.1.153</td>
+<td>3306</td>
+<td>33061</td>
+</tr>
+</tbody></table>
+<h2 id="4-准备配置文件"><a href="#4-准备配置文件" class="headerlink" title="4.准备配置文件"></a>4.准备配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">##for global</span><br><span class="line">user&#x3D;mysql                       </span><br><span class="line">basedir&#x3D;&#x2F;application&#x2F;mysql               </span><br><span class="line">datadir&#x3D;&#x2F;application&#x2F;mysql&#x2F;data           </span><br><span class="line">server_id&#x3D;1                      </span><br><span class="line">port&#x3D;3306                  </span><br><span class="line">skip-slave-start&#x3D;1                       </span><br><span class="line">auto_increment_increment&#x3D;1                      </span><br><span class="line">auto_increment_offset &#x3D;1               </span><br><span class="line">relay-log-recovery&#x3D;1</span><br><span class="line">log_error&#x3D;&#x2F;application&#x2F;mysql&#x2F;data&#x2F;db01.err</span><br><span class="line"></span><br><span class="line">##binlog参数</span><br><span class="line">log_bin&#x3D;mysql-bin </span><br><span class="line">binlog_format&#x3D;row               </span><br><span class="line">binlog_rows_query_log_events&#x3D;on                   </span><br><span class="line">log_slave_updates&#x3D;on                                            </span><br><span class="line">binlog_checksum&#x3D;none                     </span><br><span class="line">sync_binlog&#x3D;1                   </span><br><span class="line"></span><br><span class="line">##使用GTID模式                </span><br><span class="line">gtid_mode&#x3D;on                       </span><br><span class="line">enforce_gtid_consistency&#x3D;on                     </span><br><span class="line"></span><br><span class="line">#使用系统表来存储Slave信息</span><br><span class="line">master_info_repository&#x3D;table                       </span><br><span class="line">relay_log_info_repository&#x3D;table                        </span><br><span class="line"></span><br><span class="line">#MGR参数</span><br><span class="line">#开启主键采集功能,要求宾虚开启，且集群中每个表都要有主键</span><br><span class="line">transaction_write_set_extraction&#x3D;XXHASH64</span><br><span class="line">#设置组的名字，一个组中的成员名字要相同，名字必须是UUID</span><br><span class="line">loose-group_replication_group_name&#x3D;&quot;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&quot;        </span><br><span class="line">#设置成员的本地地址和端口，该端口为组的通信端口</span><br><span class="line">loose-group_replication_local_address&#x3D;&quot;172.16.1.151:33061&quot;</span><br><span class="line">#设置组内其他成员的地址</span><br><span class="line">loose-group_replication_group_seeds&#x3D;&quot;172.16.1.151:33061,172.16.1.152:33061,172.16.1.153:33061&quot;</span><br><span class="line">#设置成员IP白名单，控制哪些IP地址MySQL可以加入组内，不设置则只允许和自己在同一私网可以连接到自己。</span><br><span class="line">loose-group_replication_whitelist&#x3D;&quot;172.16.1.0&#x2F;24&quot;</span><br></pre></td></tr></table></figure>
+
+<p>db02和db03配置文件更改db01中的部分参数即可。</p>
+<h2 id="5-配置MGR单主模式"><a href="#5-配置MGR单主模式" class="headerlink" title="5.配置MGR单主模式"></a>5.配置MGR单主模式</h2><h3 id="5-1-加入主成员到组"><a href="#5-1-加入主成员到组" class="headerlink" title="5.1 加入主成员到组"></a>5.1 加入主成员到组</h3><p>1.创建MGR所需的用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set sql_log_bin&#x3D;0;</span><br><span class="line">grant replication slave,replication client on *.* to rpl_user@&#39;%&#39; identified by &#39;123456&#39;;</span><br><span class="line">set sql_log_bin&#x3D;1;</span><br></pre></td></tr></table></figure>
+
+<p>2.安装MGR插件 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">install plugin group_replication soname &#39;group_replication.so&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>3.初始化一个复制组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#告诉MGR插件，它是组内的第一个成员，需要进行初始化操作，只在第一个成员时使用。</span><br><span class="line">set global group_replication_bootstrap_group&#x3D;on;</span><br><span class="line">start group_replication;</span><br><span class="line">#初始化完成之后要将该变量设置成off</span><br><span class="line">set global group_replication_bootstrap_group&#x3D;off;</span><br></pre></td></tr></table></figure>
+
+<p>4.配置异步复制通道</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">change master to </span><br><span class="line">master_user&#x3D;&#39;rpl_user&#39;,</span><br><span class="line">master_password&#x3D;&#39;123456&#39;</span><br><span class="line">for channel &#39;group_replication_recovery&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>5.检查MGR是否配置成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">select * from performance_schema.replication_group_members;</span><br><span class="line">+---------------------------+--------------------------------------+-------------+-------------+--------------+</span><br><span class="line">| CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST | MEMBER_PORT | MEMBER_STATE |</span><br><span class="line">+---------------------------+--------------------------------------+-------------+-------------+--------------+</span><br><span class="line">| group_replication_applier | d7a2055f-2c43-11ea-9875-000c29be307b | db01        |        3306 | ONLINE       |</span><br><span class="line">+---------------------------+--------------------------------------+-------------+-------------+--------------+</span><br><span class="line"></span><br><span class="line">mgr中所有的结点都属于一个逻辑上的组、这个组就像是QQ群一样、是由群主建起来的、有了这个上组之后、其它的结点就可以加入到这个组中来了。</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-组中加入新成员"><a href="#5-2-组中加入新成员" class="headerlink" title="5.2 组中加入新成员"></a>5.2 组中加入新成员</h3><p>1.配置MGR所需要的复制用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set sql_log_bin&#x3D;0;</span><br><span class="line">grant replication slave,replication client on *.* to rpl_user@&#39;%&#39; identified by &#39;123456&#39;;</span><br><span class="line">set sql_log_bin&#x3D;1;</span><br></pre></td></tr></table></figure>
+
+<p>2.安装MGR插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">install plugin group_replication soname &#39;group_replication.so&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>3.配置异步复制通道并加入组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">change master to </span><br><span class="line">master_user&#x3D;&#39;rpl_user&#39;,</span><br><span class="line">master_password&#x3D;&#39;123456&#39;</span><br><span class="line">for channel &#39;group_replication_recovery&#39;;</span><br><span class="line">start group_replication;</span><br></pre></td></tr></table></figure>
+
+<p>4.报错解决方法：<a href="https://blog.csdn.net/snowhite91/article/details/83791997" target="_blank" rel="noopener">点击跳转解决</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">日志报错如下：</span><br><span class="line">[ERROR] Plugin group_replication reported: &#39;This member has more executed transactions than those present in the group.</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-集群的操作"><a href="#5-3-集群的操作" class="headerlink" title="5.3 集群的操作"></a>5.3 集群的操作</h3><p>1.检查集群状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select * from performance_schema.replication_group_members;</span><br><span class="line">成员状态有以下五种：</span><br><span class="line">1.OFFLINE         --&gt;没有启用MGR插件时的状态</span><br><span class="line">2.RECOVERING      --&gt;启动插件时的状态，开始加入复制之前的数据</span><br><span class="line">3.ONLINE          --&gt;当Recovery过程完成后，正常对外提供访问状态</span><br><span class="line">4.ERROR           --&gt;本地成员发生错误，无法进行MGR时的状态</span><br><span class="line">5.UNREACHABLE     --&gt;当网络故障或宕机时的状态</span><br></pre></td></tr></table></figure>
+
+<p>2.查看主成员的UUID</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">show global status like &quot;group_replication_primary_member&quot;;</span><br><span class="line">或者</span><br><span class="line">select * from performance_schema.global_status where variable_name&#x3D;&quot;group_replication_primary_member&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>3.读写模式的自动切换</p>
+<p>当一个成员加入组时，MGR插件就会自动将该MySQL实例变成只读模式，只有被选取为主成员后才会自动切换为读写模式通过以下SQL语句控制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set global super_read_only&#x3D;1;#只读</span><br><span class="line">set global super_read_only&#x3D;0;#读写</span><br></pre></td></tr></table></figure>
+
+<p>4.failover</p>
+<p>当主成员故障时，组内会自动选出新的主成员，复制也能正常进行，英雌组内的failover是完全自动化的，客户端（中间件或者程序）需要从其中的某个成员上查询到主成员的UUID，让后将连接迁移到新主成员上。</p>
+<p>5.写入数据到主成员进行复制测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">create database mgr;</span><br><span class="line">create table mgr.test(id int primary key auto_increment);</span><br><span class="line">insert into mgr.test values(1);</span><br><span class="line">#可以写脚本进行批量插入</span><br></pre></td></tr></table></figure>
+
+<p>6.故障切换测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">1.关闭主库db01的mysqld服务</span><br><span class="line">systemctl stop mysqld</span><br><span class="line"></span><br><span class="line">2.在其他节点查看集群中节点的状态</span><br><span class="line">select * from performance_schema.replication_group_members;</span><br><span class="line"></span><br><span class="line">3.在db02上进行写数据测试</span><br><span class="line">insert into mgr.test values(2);    --&gt;插入成功表示被选为主节点，可以进行读写操作，也可通过命令查看主节点的UUID进行验证。</span><br><span class="line"></span><br><span class="line">4.修复db01的mysqld服务(我们这里重新启动服务即可)</span><br><span class="line">systemctl start mysqld</span><br><span class="line"></span><br><span class="line">5.启动之后需要手动执行加入组操作</span><br><span class="line">start group_replication;</span><br><span class="line"></span><br><span class="line">6.查看集群状态，再次进行写入数据测试，检查db01是否同步数据</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-配置MGR多主模式"><a href="#6-配置MGR多主模式" class="headerlink" title="6.配置MGR多主模式"></a>6.配置MGR多主模式</h2><p>MGR切换模式需要重新启动组复制，因些需要在所有节点上先关闭组复制，设置 group_replication_single_primary_mode=OFF 等参数，再启动组复制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">1.停止组复制(在所有MGR节点上执行)：</span><br><span class="line">stop group_replication;</span><br><span class="line">set global group_replication_single_primary_mode&#x3D;OFF;</span><br><span class="line">set global group_replication_enforce_update_everywhere_checks&#x3D;ON;</span><br><span class="line"></span><br><span class="line">2.随便选择某个MGR节点执行 (比如这里选择在db01节点):</span><br><span class="line">SET GLOBAL group_replication_bootstrap_group&#x3D;ON;</span><br><span class="line">START GROUP_REPLICATION;</span><br><span class="line">SET GLOBAL group_replication_bootstrap_group&#x3D;OFF;</span><br><span class="line"> </span><br><span class="line">3.然后在其他的MGR节点执行 (这里指db02、db03节点上执行):</span><br><span class="line">START GROUP_REPLICATION;</span><br><span class="line"> </span><br><span class="line">4.查看MGR组信息 (在任意一个MGR节点上都可以查看)</span><br><span class="line">SELECT * FROM performance_schema.replication_group_members;</span><br><span class="line">+---------------------------+--------------------------------------+-------------+-------------+--------------+</span><br><span class="line">| CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST | MEMBER_PORT | MEMBER_STATE |</span><br><span class="line">+---------------------------+--------------------------------------+-------------+-------------+--------------+</span><br><span class="line">| group_replication_applier | 0bd3be73-2bd3-11ea-ae79-000c29f306db | db02        |        3306 | ONLINE       |</span><br><span class="line">| group_replication_applier | 0d9768cc-2bd3-11ea-802c-000c29ee8701 | db03        |        3306 | ONLINE       |</span><br><span class="line">| group_replication_applier | d7a2055f-2c43-11ea-9875-000c29be307b | db01        |        3306 | ONLINE       |</span><br><span class="line">+---------------------------+--------------------------------------+-------------+-------------+--------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">5.在多台服务器上进行写入数据测试</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-切换为单主模式"><a href="#7-切换为单主模式" class="headerlink" title="7.切换为单主模式"></a>7.切换为单主模式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">1.停止组复制(在所有MGR节点上执行)：</span><br><span class="line">stop group_replication;</span><br><span class="line">set global group_replication_enforce_update_everywhere_checks&#x3D;OFF;</span><br><span class="line">set global group_replication_single_primary_mode&#x3D;ON;</span><br><span class="line"> </span><br><span class="line">2.选择一个节点作为主节点, 在主节点上执行 (这里选择db01节点作为主节点)</span><br><span class="line">SET GLOBAL group_replication_bootstrap_group&#x3D;ON;</span><br><span class="line">START GROUP_REPLICATION;</span><br><span class="line">SET GLOBAL group_replication_bootstrap_group&#x3D;OFF;</span><br><span class="line"> </span><br><span class="line">3.在其他剩余的节点, 也就是从库节点上执行 (这里从库节点指的就是MGR-node2和MGR-node3):</span><br><span class="line">START GROUP_REPLICATION;</span><br><span class="line"></span><br><span class="line">4.查看组成员信息</span><br><span class="line">SELECT * FROM performance_schema.replication_group_members;</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-故障切换"><a href="#8-故障切换" class="headerlink" title="8.故障切换"></a>8.故障切换</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1.单主模式</span><br><span class="line">如果从节点挂了, 恢复后, 只需要手动激活下该节点的组复制功能(&quot;START GROUP_REPLICATION;&quot;),</span><br><span class="line">即可正常加入到MGR组复制集群内并自动同步其他节点数据.</span><br><span class="line"></span><br><span class="line">2.多主模式</span><br><span class="line">如果某个节点挂了, 则其他的节点继续进行同步.</span><br><span class="line">当故障节点恢复后, 只需要手动激活下该节点的组复制功能(&quot;START GROUP_REPLICATION;&quot;),</span><br><span class="line">即可正常加入到MGR组复制集群内并自动同步其他节点数据.</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/MGR.html" data-id="ck50uk2ks00004vsd4okqadi1" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/01/05/MGR-md/">./MGR.md</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/05/My-New-Post/">My New Post</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/05/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
